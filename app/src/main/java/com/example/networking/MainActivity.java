@@ -3,17 +3,13 @@ package com.example.networking;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -26,17 +22,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity<adapter> extends AppCompatActivity {
 
 
-    private ListView listView;
-    private Mountain[] mountains;
+    //private ListView listview;
+    //private Mountain[] mountains;
     private ArrayList<Mountain> arrayList;
     private ArrayAdapter<Mountain> adapter;
-
 
 
     @SuppressWarnings("SameParameterValue")
@@ -58,19 +52,18 @@ public class MainActivity extends AppCompatActivity {
 
         new JsonTask().execute("https://wwwlab.iit.his.se/brom/kurser/mobilprog/dbservice/admin/getdataasjson.php?type=brom");
 
-        String s = readFile("mountains.json");
-        Log.d("MainActivity ==>","The following text was found in textfile:\n\n"+s);
+        //String s = readFile("mountains.json");
+        //Log.d("MainActivity ==>","The following text was found in textfile:\n\n"+s);
 
-        Gson gson = new Gson();
-        mountains = gson.fromJson(s,Mountain[].class);
+        //Gson gson = new Gson();
+        //Mountain = gson.fromJson(s,Mountain[].class);
 
-        for (int i = 0; i < mountains.length; i++) {
-            Log.d("MainActivity ==>", "Hittade ett berg: "+ mountains[i].getName() + " " + mountains[i].getAuxdata().getWiki());
-        }
+        //for (int i = 0; i < mountains.length; i++) {
+        //    Log.d("MainActivity ==>", "Hittade ett berg: "+ mountains[i].getName() + " " + mountains[i].getAuxdata().getWiki());
+        //}
 
-
-
-        adapter = new ArrayAdapter<Mountain>(this, R.layout.list_item_textview, mountains);
+        arrayList = new ArrayList();
+        adapter = new ArrayAdapter<Mountain>(this, R.layout.list_item_textview, arrayList);
         ListView listView = findViewById(R.id.my_listview);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,11 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class JsonTask extends AsyncTask<String, String, String> {
+@SuppressLint("StaticFieldLeak")
+public class JsonTask extends AsyncTask<String, String, String> {
 
         private HttpURLConnection connection = null;
         private BufferedReader reader = null;
+        private Object Mountain;
 
         protected String doInBackground(String... params) {
             try {
@@ -125,16 +119,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String json) {
             Log.d("AsyncTask ==>", json);
-
             Gson gson = new Gson();
             Mountain[] newMountains = gson.fromJson(json,Mountain[].class);
-            adapter = new ArrayAdapter<Mountain>(MainActivity.this,R.layout.list_item_textview,newMountains);
-
-            for (int i = 0; i < mountains.length; i++) {
-                Log.d("AsyncTask ==>", "Hittade ett berg: "+ newMountains[i]);
+            for (int i = 0; i < newMountains.length; i++) {
+                Log.d("AsyncTask ==>", "Hittade ett berg: " + newMountains[i]);
             }
         }
     }
-
-
 }
+
+//cleara din lista
+//för varje element som hittas i array lägg till i listan
+//Notifiera adaptern
