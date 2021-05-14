@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -52,16 +53,6 @@ public class MainActivity<adapter> extends AppCompatActivity {
 
         new JsonTask().execute("https://wwwlab.iit.his.se/brom/kurser/mobilprog/dbservice/admin/getdataasjson.php?type=brom");
 
-        //String s = readFile("mountains.json");
-        //Log.d("MainActivity ==>","The following text was found in textfile:\n\n"+s);
-
-        //Gson gson = new Gson();
-        //Mountain = gson.fromJson(s,Mountain[].class);
-
-        //for (int i = 0; i < mountains.length; i++) {
-        //    Log.d("MainActivity ==>", "Hittade ett berg: "+ mountains[i].getName() + " " + mountains[i].getAuxdata().getWiki());
-        //}
-
         arrayList = new ArrayList();
         adapter = new ArrayAdapter<Mountain>(this, R.layout.list_item_textview, arrayList);
         ListView listView = findViewById(R.id.my_listview);
@@ -69,11 +60,25 @@ public class MainActivity<adapter> extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showToast();
             }
         });
 
-
     }
+
+    public void showToast() {
+         
+    }
+
+    //String s = readFile("mountains.json");
+    //Log.d("MainActivity ==>","The following text was found in textfile:\n\n"+s);
+
+    //Gson gson = new Gson();
+    //Mountain = gson.fromJson(s,Mountain[].class);
+
+    //for (int i = 0; i < mountains.length; i++) {
+    //    Log.d("MainActivity ==>", "Hittade ett berg: "+ mountains[i].getName() + " " + mountains[i].getAuxdata().getWiki());
+    //}
 
 @SuppressLint("StaticFieldLeak")
 public class JsonTask extends AsyncTask<String, String, String> {
@@ -121,12 +126,26 @@ public class JsonTask extends AsyncTask<String, String, String> {
             Log.d("AsyncTask ==>", json);
             Gson gson = new Gson();
             Mountain[] newMountains = gson.fromJson(json,Mountain[].class);
+            arrayList.clear();
             for (int i = 0; i < newMountains.length; i++) {
+                Mountain m = newMountains[i];
                 Log.d("AsyncTask ==>", "Hittade ett berg: " + newMountains[i]);
+                arrayList.add(m);
             }
+            adapter.notifyDataSetChanged();
         }
     }
 }
+
+/*
+Mountain[] newMountains = gson.fromJson(json,Mountain[].class);
+    arrayList.clear();
+    for (int i = 0; i < newMountains .length; i++) {
+        Mountain m= newMountains[i];
+        Log.d("AsyncTask ==>", "Hittade ett berg: " + newMountains[i]);
+        arrayList.add(m);
+    }
+    adapter.notifyDataSetChanged();*/
 
 //cleara din lista
 //för varje element som hittas i array lägg till i listan

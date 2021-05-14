@@ -27,5 +27,5 @@ public class Mountain {
     }
 
     @Override
-    public String toString() { return name + " locatded at " + location; }
+    public String toString() { return name; }
 }
