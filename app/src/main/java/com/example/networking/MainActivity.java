@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.jar.Attributes;
 
 public class MainActivity<adapter> extends AppCompatActivity {
 
@@ -31,7 +32,7 @@ public class MainActivity<adapter> extends AppCompatActivity {
     //private ListView listview;
     //private Mountain[] mountains;
     private ArrayList<Mountain> arrayList;
-    private ArrayAdapter<Mountain> adapter;
+    private ArrayAdapter adapter;
 
 
     @SuppressWarnings("SameParameterValue")
@@ -54,21 +55,24 @@ public class MainActivity<adapter> extends AppCompatActivity {
         new JsonTask().execute("https://wwwlab.iit.his.se/brom/kurser/mobilprog/dbservice/admin/getdataasjson.php?type=brom");
 
         arrayList = new ArrayList();
-        adapter = new ArrayAdapter<Mountain>(this, R.layout.list_item_textview, arrayList);
+        adapter = new ArrayAdapter(this, R.layout.list_item_textview, arrayList);
         ListView listView = findViewById(R.id.my_listview);
         listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showToast();
+                Mountain temp_m = arrayList.get(position);
+
+                Log.d("MainActivity ==>", "Toast");
+                Toast.makeText(MainActivity.this, "Fakta om:  " + temp_m.getName() + "Höjd: "
+                        + temp_m.getLocation(), Toast.LENGTH_SHORT).show();
+
             }
         });
 
     }
 
-    public void showToast() {
-         
-    }
 
     //String s = readFile("mountains.json");
     //Log.d("MainActivity ==>","The following text was found in textfile:\n\n"+s);
