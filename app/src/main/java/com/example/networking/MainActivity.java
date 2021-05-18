@@ -65,8 +65,8 @@ public class MainActivity<adapter> extends AppCompatActivity {
                 Mountain temp_m = arrayList.get(position);
 
                 Log.d("MainActivity ==>", "Toast");
-                Toast.makeText(MainActivity.this, "Fakta om:  " + temp_m.getName() + "Höjd: "
-                        + temp_m.getLocation(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Fakta om:  " + temp_m.getName() + "." + " Plats: "
+                        + temp_m.getLocation() + "." + " Höjd: " + temp_m.getMeters() + " meter.", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -141,16 +141,4 @@ public class JsonTask extends AsyncTask<String, String, String> {
     }
 }
 
-/*
-Mountain[] newMountains = gson.fromJson(json,Mountain[].class);
-    arrayList.clear();
-    for (int i = 0; i < newMountains .length; i++) {
-        Mountain m= newMountains[i];
-        Log.d("AsyncTask ==>", "Hittade ett berg: " + newMountains[i]);
-        arrayList.add(m);
-    }
-    adapter.notifyDataSetChanged();*/
 
-//cleara din lista
-//för varje element som hittas i array lägg till i listan
-//Notifiera adaptern

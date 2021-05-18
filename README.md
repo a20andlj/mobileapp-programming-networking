@@ -1,42 +1,91 @@
 
-# Rapport
+# Rapport Uppgift 6 - Networking
 
-**Skriv din rapport här!**
-
-_Du kan ta bort all text som finns sedan tidigare_.
-
-## Följande grundsyn gäller dugga-svar:
-
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
-
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
-
+I layoutfilen lades det till en listview för att kunna presentera bergen som hämtades från webservicen 
+i en lista. Den lades i en constraint layout och matchades i bredd och höjd. En margin lades på för att 
+texten inte skulle vara precis i kanten. Den tilldelades ett id. Varje rad i listviewen är en textview
+så därför skapas en ny resource sml-fil som döps till list_view_textview.
 ```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+<ListView
+        android:id="@+id/my_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        ...
+```
+
+I MainActivity deklarerades två medlemsvariabler, ArrayList och ArrayAdapter. Adaptern behövs för att 
+omkoppla så att items kan synas i vyn. 
+```
+private ArrayList<Mountain> arrayList;
+    private ArrayAdapter adapter;
+```
+
+Koden för att kunna använda jasontask kopierades från ett exempel på duggasidan och lades i MainActivity
+dock inte under onCreate, utan som en egen metod. För att kunna hämta data från websericen lades sedan 
+nedan kod i onCreate.
+```
+new JsonTask().execute("https://wwwlab.iit.his.se/brom/kurser/mobilprog/dbservice/admin/getdataasjson.php?type=brom");
+```
+
+Efter att execute körs måste json-datan tolkas och en egen class skapas och döps till Mountain. I 
+onPostEcecute meddelades adaptern att ändringar är gjorda och datan läses in och tolkas. Arraylistan
+clearas för att bergen läggs till. 
+```
+@Override
+        protected void onPostExecute(String json) {
+            Log.d("AsyncTask ==>", json);
+            Gson gson = new Gson();
+            Mountain[] newMountains = gson.fromJson(json,Mountain[].class);
+            arrayList.clear();
+            for (int i = 0; i < newMountains.length; i++) {
+                Mountain m = newMountains[i];
+                Log.d("AsyncTask ==>", "Hittade ett berg: " + newMountains[i]);
+                arrayList.add(m);
+            }
+            adapter.notifyDataSet
+```
+
+I Mountainklassen deklarerades en variabel för varje data som hämtades från webservicen. Därefter 
+genererades getters för den datan som skulle visas i vyn. En Override skapas för att göra om 
+datan till en String som ska synas i första vyn. Namnet på bergen returneras och blir det som syns.
+```
+public String getName() {
+        return name;
     }
+
+    public String getLocation() { return location; }
+
+    public Integer getMeters() { return meters; }
+
+    public Auxdata getAuxdata() {
+        return auxdata;
+    }
+
+    @Override
+    public String toString() { return name; }
 }
 ```
 
-Bilder läggs i samma mapp som markdown-filen.
+För att få någon effekt när det klickas på något av bergen i listan så sätts en onClickItemListenter 
+i onCreate i MainActivity. Viktigt att det är en onClickItemListener... och inte bara en onClikListener
+för att specifikt kunna klicka på det berg som användaren vill veta mer om. 
+En toast visar två fakta till om berget som det klickas på. Längden på toasten sattes till long för att användaren ska
+hinna läsa faktan. 
+```
+listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+......(mer kod här)
+                Log.d("MainActivity ==>", "Toast");
+                Toast.makeText(MainActivity.this, "Fakta om:  " + temp_m.getName() + "." + " Plats: "
+                        + temp_m.getLocation() + "." + " Höjd: " + temp_m.getMeters() + " meter.", Toast.LENGTH_LONG).show();
+            }
+        });
+```
+När toasten skapades uppstod det problem eftersom den inte syntes när det klickades på ett berg i vyn. 
+Med handledningshjälp uppenbarades att en emulator med längre API var tvungen att laddas ner för att toasten
+skulle fungera. 
 
-![](android.png)
+Screenshot på hur appen ser ut när ett berg har klickats på och toasten visar sig.
 
-Läs gärna:
+![](screenshoot_dugga6.png)
 
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.
